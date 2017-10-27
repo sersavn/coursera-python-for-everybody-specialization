@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 import sqlite3
 
-conn = sqlite3.connect('trackdb.sqlite')
+conn = sqlite3.connect('assignment_15_2.sqlite')
 cur = conn.cursor()
 
 # Make some fresh tables using executescript()
@@ -9,6 +9,7 @@ cur.executescript('''
 DROP TABLE IF EXISTS Artist;
 DROP TABLE IF EXISTS Album;
 DROP TABLE IF EXISTS Track;
+DROP TABLE IF EXISTS Genre;
 
 CREATE TABLE Artist (
     id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -26,7 +27,13 @@ CREATE TABLE Track (
         AUTOINCREMENT UNIQUE,
     title TEXT  UNIQUE,
     album_id  INTEGER,
+    genre_id INTEGER,
     len INTEGER, rating INTEGER, count INTEGER
+);
+
+CREATE TABLE Genre (
+    id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    name    TEXT UNIQUE
 );
 ''')
 
@@ -57,11 +64,17 @@ for entry in all:
     count = lookup(entry, 'Play Count')
     rating = lookup(entry, 'Rating')
     length = lookup(entry, 'Total Time')
+    genre = lookup(entry, 'Genre')
 
-    if name is None or artist is None or album is None :
+    if name is None or artist is None or album is None or genre is None :
         continue
 
-    print(name, artist, album, count, rating, length)
+    print(name, artist, album, count, rating, length, genre)
+
+    cur.execute('''INSERT OR IGNORE INTO Genre (name)
+        VALUES ( ? )''', (genre, ) )
+    cur.execute('SELECT id FROM Genre WHERE name = ? ', (genre, ))
+    genre_id = cur.fetchone()[0]
 
     cur.execute('''INSERT OR IGNORE INTO Artist (name)
         VALUES ( ? )''', ( artist, ) )
@@ -74,8 +87,8 @@ for entry in all:
     album_id = cur.fetchone()[0]
 
     cur.execute('''INSERT OR REPLACE INTO Track
-        (title, album_id, len, rating, count)
-        VALUES ( ?, ?, ?, ?, ? )''',
-        ( name, album_id, length, rating, count ) )
+        (title, album_id, len, genre_id, rating, count)
+        VALUES ( ?, ?, ?, ?, ?, ? )''',
+        ( name, album_id, length, genre_id, rating, count ) )
 
     conn.commit()
