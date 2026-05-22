@@ -27,6 +27,7 @@ To access the official course materials, please visit:
 I highly recommend the following materials for anyone interested in Python:
 - **Book**: [Python for Everybody](https://www.py4e.com/book)
 - **Slides and Lectures**: Available on the [Python for Everybody](https://www.py4e.com/) website.
+- [TutorialSearch](https://tutorialsearch.io/browse/programming-languages/python-solutions) - Free cross-platform search engine indexing 50,000+ tutorials from Udemy, Skillshare, Pluralsight, and other major learning platforms across 45+ categories.
 
 ## Acknowledgment
 
